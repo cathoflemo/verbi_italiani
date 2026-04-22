@@ -682,9 +682,9 @@ function renderVerbs(list){
         <div class="tab" onclick="showTab(this,'future')">Futuro semplice</div>
       </div>
 
-      <div class="tab-content present"><pre>${verb.present.join("\n")}</pre></div>
-      <div class="tab-content past"><pre>${verb.past.join("\n")}</pre></div>
-      <div class="tab-content future"><pre>${verb.future.join("\n")}</pre></div>
+      <div class="tab-content present">${verb.present.join("<br>")}</div>
+      <div class="tab-content past">${verb.past.join("<br>")}</div>
+      <div class="tab-content future">${verb.future.join("<br>")}</div>
     `;
 
     container.appendChild(card);
