@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>verbi italiani</title>
+
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -13,598 +14,167 @@
       background: #f7fafc;
       color: #2d3748;
     }
+
     h1 {
       color: #2c7a7b;
       text-align: center;
-      margin-bottom: 10px;
     }
+
     .subtitle {
       text-align: center;
       color: #718096;
       margin-bottom: 20px;
-      font-size: 0.95em;
     }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
     .verb-card {
       background: white;
       border-radius: 10px;
       padding: 16px;
       margin: 12px 0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      cursor: pointer;
       border-left: 4px solid transparent;
     }
+
     .verb-card.active {
       border-left: 4px solid #2c7a7b;
       background: #f0fff4;
     }
+
     .verb-header {
-      font-weight: 700;
+      font-weight: bold;
       color: #2c7a7b;
-      font-size: 1.1em;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
+
     .verb-meaning {
       color: #4a5568;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
+
     .tabs {
       display: flex;
-      border-bottom: 1px solid #e2e8f0;
-      margin-bottom: 12px;
-      font-size: 0.95em;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 10px;
     }
+
     .tab {
       padding: 6px 12px;
       cursor: pointer;
-      border: 1px solid transparent;
-      border-bottom: 0;
-      border-radius: 6px 6px 0 0;
-      margin-right: 5px;
-      color: #718096;
+      color: #666;
     }
-    .tab:hover {
-      background: #f7fafc;
-    }
+
     .tab.active {
-      background: #ebf8ff;
-      border: 1px solid #cbd5e0;
-      border-bottom: 0;
       color: #2c5282;
+      font-weight: bold;
     }
+
     .tab-content {
       display: none;
-      padding: 10px;
-      background: #f7fafc;
-      border-radius: 6px;
-      font-size: 0.95em;
     }
+
     .tab-content.active {
       display: block;
     }
   </style>
 </head>
+
 <body>
-  <h1>🇮🇹 verbi italiani 🇮🇹</h1>
-  <p class="subtitle">
-    Click any verb, then choose a tense.
-  </p>
 
-  <div id="verbs-list"></div>
+<h1>🇮🇹 Verbi italiani 🇮🇹</h1>
+<p class="subtitle">Cerca e studia i verbi</p>
 
-  <script>
-    // --- Data setup ---
-    let verbs = [
-  {
-    "infinitive": "essere",
-    "meaning": "to be",
-    "present": [
-      "io sono",
-      "tu sei",
-      "lui/lei è",
-      "noi siamo",
-      "voi siete",
-      "loro sono"
-    ],
-    "past": [
-      "io sono stato/a",
-      "tu sei stato/a",
-      "lui/lei è stato/a",
-      "noi siamo stati/e",
-      "voi siete stati/e",
-      "loro sono stati/e"
-    ],
-    "future": [
-      "io sarò",
-      "tu sarai",
-      "lui/lei sarà",
-      "noi saremo",
-      "voi sarete",
-      "loro saranno"
-    ]
+<input type="text" id="search" placeholder="Cerca un verbo..." oninput="filterVerbs()">
+
+<div id="verbs-list"></div>
+
+<script>
+let verbs = [
+  { infinitive: "essere", meaning: "to be",
+    present: ["io sono","tu sei","lui/lei è","noi siamo","voi siete","loro sono"],
+    past: ["io sono stato/a","tu sei stato/a","lui/lei è stato/a","noi siamo stati/e","voi siete stati/e","loro sono stati/e"],
+    future: ["io sarò","tu sarai","lui/lei sarà","noi saremo","voi sarete","loro saranno"]
   },
-  {
-    "infinitive": "avere",
-    "meaning": "to have",
-    "present": [
-      "io ho",
-      "tu hai",
-      "lui/lei ha",
-      "noi abbiamo",
-      "voi avete",
-      "loro hanno"
-    ],
-    "past": [
-      "io ho avuto",
-      "tu hai avuto",
-      "lui/lei ha avuto",
-      "noi abbiamo avuto",
-      "voi avete avuto",
-      "loro hanno avuto"
-    ],
-    "future": [
-      "io avrò",
-      "tu avrai",
-      "lui/lei avrà",
-      "noi avremo",
-      "voi avrete",
-      "loro avranno"
-    ]
+  { infinitive: "avere", meaning: "to have",
+    present: ["io ho","tu hai","lui/lei ha","noi abbiamo","voi avete","loro hanno"],
+    past: ["io ho avuto","tu hai avuto","lui/lei ha avuto","noi abbiamo avuto","voi avete avuto","loro hanno avuto"],
+    future: ["io avrò","tu avrai","lui/lei avrà","noi avremo","voi avrete","loro avranno"]
   },
-  {
-    "infinitive": "fare",
-    "meaning": "to do / to make",
-    "present": [
-      "io faccio",
-      "tu fai",
-      "lui/lei fa",
-      "noi facciamo",
-      "voi fate",
-      "loro fanno"
-    ],
-    "past": [
-      "io ho fatto",
-      "tu hai fatto",
-      "lui/lei ha fatto",
-      "noi abbiamo fatto",
-      "voi avete fatto",
-      "loro hanno fatto"
-    ],
-    "future": [
-      "io farò",
-      "tu farai",
-      "lui/lei farà",
-      "noi faremo",
-      "voi farete",
-      "loro faranno"
-    ]
+  { infinitive: "andare", meaning: "to go",
+    present: ["io vado","tu vai","lui/lei va","noi andiamo","voi andate","loro vanno"],
+    past: ["io sono andato/a","tu sei andato/a","lui/lei è andato/a","noi siamo andati/e","voi siete andati/e","loro sono andati/e"],
+    future: ["io andrò","tu andrai","lui/lei andrà","noi andremo","voi andrete","loro andranno"]
   },
-  {
-    "infinitive": "dire",
-    "meaning": "to say",
-    "present": [
-      "io dico",
-      "tu dici",
-      "lui/lei dice",
-      "noi diciamo",
-      "voi dite",
-      "loro dicono"
-    ],
-    "past": [
-      "io ho detto",
-      "tu hai detto",
-      "lui/lei ha detto",
-      "noi abbiamo detto",
-      "voi avete detto",
-      "loro hanno detto"
-    ],
-    "future": [
-      "io dirò",
-      "tu dirai",
-      "lui/lei dirà",
-      "noi diremo",
-      "voi direte",
-      "loro diranno"
-    ]
-  },
-  {
-    "infinitive": "andare",
-    "meaning": "to go",
-    "present": [
-      "io vado",
-      "tu vai",
-      "lui/lei va",
-      "noi andiamo",
-      "voi andate",
-      "loro vanno"
-    ],
-    "past": [
-      "io sono andato/a",
-      "tu sei andato/a",
-      "lui/lei è andato/a",
-      "noi siamo andati/e",
-      "voi siete andati/e",
-      "loro sono andati/e"
-    ],
-    "future": [
-      "io andrò",
-      "tu andrai",
-      "lui/lei andrà",
-      "noi andremo",
-      "voi andrete",
-      "loro andranno"
-    ]
-  },
-  {
-    "infinitive": "venire",
-    "meaning": "to come",
-    "present": [
-      "io vengo",
-      "tu vieni",
-      "lui/lei viene",
-      "noi veniamo",
-      "voi venite",
-      "loro vengono"
-    ],
-    "past": [
-      "io sono venuto/a",
-      "tu sei venuto/a",
-      "lui/lei è venuto/a",
-      "noi siamo venuti/e",
-      "voi siete venuti/e",
-      "loro sono venuti/e"
-    ],
-    "future": [
-      "io verrò",
-      "tu verrai",
-      "lui/lei verrà",
-      "noi verremo",
-      "voi verrete",
-      "loro verranno"
-    ]
-  },
-  {
-    "infinitive": "vedere",
-    "meaning": "to see",
-    "present": [
-      "io vedo",
-      "tu vedi",
-      "lui/lei vede",
-      "noi vediamo",
-      "voi vedete",
-      "loro vedono"
-    ],
-    "past": [
-      "io ho visto",
-      "tu hai visto",
-      "lui/lei ha visto",
-      "noi abbiamo visto",
-      "voi avete visto",
-      "loro hanno visto"
-    ],
-    "future": [
-      "io vedrò",
-      "tu vedrai",
-      "lui/lei vedrà",
-      "noi vedremo",
-      "voi vedrete",
-      "loro vedranno"
-    ]
-  },
-  {
-    "infinitive": "sapere",
-    "meaning": "to know (that)",
-    "present": [
-      "io so",
-      "tu sai",
-      "lui/lei sa",
-      "noi sappiamo",
-      "voi sapete",
-      "loro sanno"
-    ],
-    "past": [
-      "io ho saputo",
-      "tu hai saputo",
-      "lui/lei ha saputo",
-      "noi abbiamo saputo",
-      "voi avete saputo",
-      "loro hanno saputo"
-    ],
-    "future": [
-      "io saprò",
-      "tu saprai",
-      "lui/lei saprà",
-      "noi sapremo",
-      "voi saprete",
-      "loro sapranno"
-    ]
-  },
-  {
-    "infinitive": "volere",
-    "meaning": "to want",
-    "present": [
-      "io voglio",
-      "tu vuoi",
-      "lui/lei vuole",
-      "noi vogliamo",
-      "voi volete",
-      "loro vogliono"
-    ],
-    "past": [
-      "io ho voluto",
-      "tu hai voluto",
-      "lui/lei ha voluto",
-      "noi abbiamo voluto",
-      "voi avete voluto",
-      "loro hanno voluto"
-    ],
-    "future": [
-      "io vorrò",
-      "tu vorrai",
-      "lui/lei vorrà",
-      "noi vorremo",
-      "voi vorrete",
-      "loro vorranno"
-    ]
-  },
-  {
-    "infinitive": "potere",
-    "meaning": "to be able to / can",
-    "present": [
-      "io posso",
-      "tu puoi",
-      "lui/lei può",
-      "noi possiamo",
-      "voi potete",
-      "loro possono"
-    ],
-    "past": [
-      "io ho potuto",
-      "tu hai potuto",
-      "lui/lei ha potuto",
-      "noi abbiamo potuto",
-      "voi avete potuto",
-      "loro hanno potuto"
-    ],
-    "future": [
-      "io potrò",
-      "tu potrai",
-      "lui/lei potrà",
-      "noi potremo",
-      "voi potrete",
-      "loro potranno"
-    ]
-  },
-  {
-    "infinitive": "dovere",
-    "meaning": "to have to / must",
-    "present": [
-      "io devo",
-      "tu devi",
-      "lui/lei deve",
-      "noi dobbiamo",
-      "voi dovete",
-      "loro devono"
-    ],
-    "past": [
-      "io ho dovuto",
-      "tu hai dovuto",
-      "lui/lei ha dovuto",
-      "noi abbiamo dovuto",
-      "voi avete dovuto",
-      "loro hanno dovuto"
-    ],
-    "future": [
-      "io dovrò",
-      "tu dovrai",
-      "lui/lei dovrà",
-      "noi dovremo",
-      "voi dovrete",
-      "loro dovranno"
-    ]
-  },
-  {
-    "infinitive": "stare",
-    "meaning": "to stay / to be (in a state)",
-    "present": [
-      "io sto",
-      "tu stai",
-      "lui/lei sta",
-      "noi stiamo",
-      "voi state",
-      "loro stanno"
-    ],
-    "past": [
-      "io sono stato/a",
-      "tu sei stato/a",
-      "lui/lei è stato/a",
-      "noi siamo stati/e",
-      "voi siete stati/e",
-      "loro sono stati/e"
-    ],
-    "future": [
-      "io starò",
-      "tu starai",
-      "lui/lei starà",
-      "noi staremo",
-      "voi starete",
-      "loro staranno"
-    ]
-  },
-  {
-    "infinitive": "dare",
-    "meaning": "to give",
-    "present": [
-      "io do",
-      "tu dai",
-      "lui/lei dà",
-      "noi diamo",
-      "voi date",
-      "loro danno"
-    ],
-    "past": [
-      "io ho dato",
-      "tu hai dato",
-      "lui/lei ha dato",
-      "noi abbiamo dato",
-      "voi avete dato",
-      "loro hanno dato"
-    ],
-    "future": [
-      "io darò",
-      "tu darai",
-      "lui/lei darà",
-      "noi daremo",
-      "voi darete",
-      "loro daranno"
-    ]
-  },
-  {
-    "infinitive": "prendere",
-    "meaning": "to take",
-    "present": [
-      "io prendo",
-      "tu prendi",
-      "lui/lei prende",
-      "noi prendiamo",
-      "voi prendete",
-      "loro prendono"
-    ],
-    "past": [
-      "io ho preso",
-      "tu hai preso",
-      "lui/lei ha preso",
-      "noi abbiamo preso",
-      "voi avete preso",
-      "loro hanno preso"
-    ],
-    "future": [
-      "io prenderò",
-      "tu prenderai",
-      "lui/lei prenderà",
-      "noi prenderemo",
-      "voi prenderete",
-      "loro prenderanno"
-    ]
-  },
-  {
-    "infinitive": "guardare",
-    "meaning": "to watch / to look at",
-    "present": [
-      "io guardo",
-      "tu guardi",
-      "lui/lei guarda",
-      "noi guardiamo",
-      "voi guardate",
-      "loro guardano"
-    ],
-    "past": [
-      "io ho guardato",
-      "tu hai guardato",
-      "lui/lei ha guardato",
-      "noi abbiamo guardato",
-      "voi avete guardato",
-      "loro hanno guardato"
-    ],
-    "future": [
-      "io guarderò",
-      "tu guarderai",
-      "lui/lei guarderà",
-      "noi guarderemo",
-      "voi guarderete",
-      "loro guarderanno"
-    ]
-  },
-  {
-    "infinitive": "mangiare",
-    "meaning": "to eat",
-    "present": [
-      "io mangio",
-      "tu mangi",
-      "lui/lei mangia",
-      "noi mangiamo",
-      "voi mangiate",
-      "loro mangiano"
-    ],
-    "past": [
-      "io ho mangiato",
-      "tu hai mangiato",
-      "lui/lei ha mangiato",
-      "noi abbiamo mangiato",
-      "voi avete mangiato",
-      "loro hanno mangiato"
-    ],
-    "future": [
-      "io mangerò",
-      "tu mangerai",
-      "lui/lei mangerà",
-      "noi mangeremo",
-      "voi mangerete",
-      "loro mangeranno"
-    ]
+  { infinitive: "fare", meaning: "to do",
+    present: ["io faccio","tu fai","lui/lei fa","noi facciamo","voi fate","loro fanno"],
+    past: ["io ho fatto","tu hai fatto","lui/lei ha fatto","noi abbiamo fatto","voi avete fatto","loro hanno fatto"],
+    future: ["io farò","tu farai","lui/lei farà","noi faremo","voi farete","loro faranno"]
   }
 ];
 
-    verbs.sort((a, b) => a.infinitive.localeCompare(b.infinitive));
-    renderVerbs();
+// sort once
+verbs.sort((a,b)=>a.infinitive.localeCompare(b.infinitive,"it"));
 
-    // --- Render all verb cards ---
-    function renderVerbs() {
-      const container = document.getElementById("verbs-list");
-      container.innerHTML = "";
+renderVerbs(verbs);
 
-      verbs.forEach((verb, i) => {
-        const card = document.createElement("div");
-        card.className = "verb-card";
+function renderVerbs(list){
+  const container=document.getElementById("verbs-list");
+  container.innerHTML="";
 
-        card.innerHTML = `
-          <div class="verb-header">${verb.infinitive}</div>
-          <div class="verb-meaning">${verb.meaning}</div>
+  list.forEach(verb=>{
+    const card=document.createElement("div");
+    card.className="verb-card";
 
-          <div class="tabs">
-            <div class="tab present" data-verb="${i}" onclick="showTab(${i}, 'present')">Presente</div>
-            <div class="tab past" data-verb="${i}" onclick="showTab(${i}, 'past')">Passato</div>
-            <div class="tab future" data-verb="${i}" onclick="showTab(${i}, 'future')">Futuro</div>
-          </div>
+    card.innerHTML=`
+      <div class="verb-header">${verb.infinitive}</div>
+      <div class="verb-meaning">${verb.meaning}</div>
 
-          <div class="tab-content present" id="present-${i}">
-            <pre>${verb.present.join("\n")}</pre>
-          </div>
+      <div class="tabs">
+        <div class="tab" onclick="showTab(this,'present')">Presente</div>
+        <div class="tab" onclick="showTab(this,'past')">Passato prossimo</div>
+        <div class="tab" onclick="showTab(this,'future')">Futuro semplice</div>
+      </div>
 
-          <div class="tab-content past" id="past-${i}">
-            <pre>${verb.past.join("\n")}</pre>
-          </div>
+      <div class="tab-content present"><pre>${verb.present.join("\n")}</pre></div>
+      <div class="tab-content past"><pre>${verb.past.join("\n")}</pre></div>
+      <div class="tab-content future"><pre>${verb.future.join("\n")}</pre></div>
+    `;
 
-          <div class="tab-content future" id="future-${i}">
-            <pre>${verb.future.join("\n")}</pre>
-          </div>
-        `;
+    container.appendChild(card);
+  });
+}
 
-        container.appendChild(card);
-      });
+function filterVerbs(){
+  const q=document.getElementById("search").value.toLowerCase();
 
-      if (verbs.length > 0) {
-        showTab(0, "present");
-      }
-    }
+  const filtered=verbs.filter(v =>
+    v.infinitive.toLowerCase().includes(q) ||
+    v.meaning.toLowerCase().includes(q)
+  );
 
-    // --- Show active tab ---
-    function showTab(i, tense) {
-      document.querySelectorAll(".verb-card").forEach(c => {
-        c.classList.remove("active");
-      });
-      document.querySelectorAll(".tab-content").forEach(c => {
-        c.classList.remove("active");
-      });
-      document.querySelectorAll(".tab").forEach(t => {
-        t.classList.remove("active");
-      });
+  renderVerbs(filtered);
+}
 
-      document.querySelector(`.tab[data-verb="${i}"][class*="${tense}"]`).classList.add("active");
-      document.getElementById(`${tense}-${i}`).classList.add("active");
+function showTab(tab,tense){
+  const card=tab.closest(".verb-card");
 
-      document.querySelector(`.verb-card:nth-child(${i + 1})`).classList.add("active");
-      document.querySelector(`.verb-card:nth-child(${i + 1})`).scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  </script>
+  card.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  card.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+
+  tab.classList.add("active");
+  card.querySelector(`.${tense}`).classList.add("active");
+
+  document.querySelectorAll(".verb-card").forEach(c=>c.classList.remove("active"));
+  card.classList.add("active");
+}
+</script>
+
 </body>
 </html>
